@@ -1,0 +1,44 @@
+# Secrets — never commit keys (host apps use .env; SDK must not ship them)
+.env
+.env.*
+*.env
+!.env.example
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+Thumbs.db
+
+# IntelliJ / IDE
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Flutter / Dart
+# Libraries should not include pubspec.lock:
+# https://dart.dev/guides/libraries/private-files#pubspeclock
+/pubspec.lock
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Coverage
+coverage/
+*.lcov
