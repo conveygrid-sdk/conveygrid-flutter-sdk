@@ -26,47 +26,83 @@ class ConveyGridConsentActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonStyle = FilledButton.styleFrom(
+    final radius = BorderRadius.circular(theme.borderRadius);
+    final primaryStyle = FilledButton.styleFrom(
       backgroundColor: theme.primaryColor,
       foregroundColor: Colors.white,
-      minimumSize: const Size.fromHeight(48),
+      minimumSize: const Size.fromHeight(50),
+      shape: RoundedRectangleBorder(borderRadius: radius),
+      textStyle: theme.buttonTextStyle ??
+          const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
     );
+    final outlineStyle = OutlinedButton.styleFrom(
+      foregroundColor: theme.secondaryColor,
+      minimumSize: const Size.fromHeight(48),
+      side: BorderSide(color: theme.secondaryColor.withValues(alpha: 0.18)),
+      shape: RoundedRectangleBorder(borderRadius: radius),
+      textStyle: theme.buttonTextStyle ??
+          const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+    );
+
     if (isSubmitting) {
-      return const Center(child: CircularProgressIndicator());
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Center(
+          child: SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: theme.primaryColor,
+            ),
+          ),
+        ),
+      );
     }
+
     if (isCustomizing) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          FilledButton(
+          FilledButton.icon(
             onPressed: onSave,
-            style: buttonStyle,
-            child: const Text(ConveyGridUiStrings.savePreferences),
+            style: primaryStyle,
+            icon: const Icon(Icons.save_outlined, size: 18),
+            label: const Text(ConveyGridUiStrings.savePreferences),
           ),
           const SizedBox(height: 8),
           OutlinedButton(
             onPressed: onCancel,
+            style: outlineStyle,
             child: const Text(ConveyGridUiStrings.cancel),
           ),
         ],
       );
     }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        FilledButton(
+        FilledButton.icon(
           onPressed: onAcceptAll,
-          style: buttonStyle,
-          child: const Text(ConveyGridUiStrings.acceptAll),
+          style: primaryStyle,
+          icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
+          label: const Text(ConveyGridUiStrings.acceptAll),
         ),
         const SizedBox(height: 8),
-        OutlinedButton(
+        OutlinedButton.icon(
           onPressed: onRejectOptional,
-          child: const Text(ConveyGridUiStrings.rejectOptional),
+          style: outlineStyle,
+          icon: const Icon(Icons.remove_circle_outline_rounded, size: 18),
+          label: const Text(ConveyGridUiStrings.rejectOptional),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
         TextButton(
           onPressed: onCustomize,
+          style: TextButton.styleFrom(
+            foregroundColor: theme.primaryColor,
+            textStyle: const TextStyle(fontWeight: FontWeight.w700),
+          ),
           child: const Text(ConveyGridUiStrings.customize),
         ),
       ],

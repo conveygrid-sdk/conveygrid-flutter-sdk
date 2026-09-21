@@ -20,18 +20,32 @@ class ConveyGridPurposeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final canToggle = !purpose.isMandatory && onChanged != null;
+    final isOn = purpose.isMandatory || selected;
+    final borderColor = isOn
+        ? theme.primaryColor.withValues(alpha: 0.35)
+        : theme.secondaryColor.withValues(alpha: 0.1);
+    final fillColor =
+        isOn ? theme.primaryColor.withValues(alpha: 0.06) : theme.surfaceColor;
+
     return Semantics(
       label:
           '${purpose.purposeName}. ${purpose.isMandatory ? ConveyGridUiStrings.mandatory : ConveyGridUiStrings.optional}',
       toggled: selected,
-      child: Container(
-        margin: EdgeInsets.only(bottom: theme.spacing),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        margin: EdgeInsets.only(bottom: theme.spacing * 0.85),
         padding: EdgeInsets.all(theme.spacing),
         decoration: BoxDecoration(
-          color: theme.surfaceColor,
+          color: fillColor,
           borderRadius: BorderRadius.circular(theme.borderRadius),
-          border:
-              Border.all(color: theme.secondaryColor.withValues(alpha: 0.12)),
+          border: Border.all(color: borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: theme.secondaryColor.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,22 +56,39 @@ class ConveyGridPurposeTile extends StatelessWidget {
                   child: Text(
                     purpose.purposeName,
                     style: theme.titleTextStyle ??
-                        const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                        TextStyle(
+                          color: theme.secondaryColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
                         ),
                   ),
                 ),
-                Chip(
-                  label: Text(
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: purpose.isMandatory
+                        ? theme.secondaryColor.withValues(alpha: 0.08)
+                        : theme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
                     purpose.isMandatory
                         ? ConveyGridUiStrings.mandatory
                         : ConveyGridUiStrings.optional,
+                    style: TextStyle(
+                      color: purpose.isMandatory
+                          ? theme.secondaryColor.withValues(alpha: 0.8)
+                          : theme.primaryColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  visualDensity: VisualDensity.compact,
                 ),
-                Switch(
-                  value: purpose.isMandatory || selected,
+                const SizedBox(width: 4),
+                Switch.adaptive(
+                  value: isOn,
                   onChanged: canToggle ? onChanged : null,
                   activeColor: theme.primaryColor,
                 ),
@@ -68,18 +99,49 @@ class ConveyGridPurposeTile extends StatelessWidget {
               purpose.purposeDescription,
               style: theme.bodyTextStyle ??
                   TextStyle(
-                      color: theme.secondaryColor.withValues(alpha: 0.75)),
+                    color: theme.secondaryColor.withValues(alpha: 0.72),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
             ),
-            if (purpose.categories.isNotEmpty) ...[
+            if (purpose.isMandatory) ...[
               const SizedBox(height: 8),
+              Text(
+                ConveyGridUiStrings.essentialLocked,
+                style: TextStyle(
+                  color: theme.secondaryColor.withValues(alpha: 0.55),
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+            if (purpose.categories.isNotEmpty) ...[
+              const SizedBox(height: 10),
               Wrap(
-                spacing: 8,
-                runSpacing: 4,
+                spacing: 6,
+                runSpacing: 6,
                 children: purpose.categories
                     .map(
-                      (category) => Chip(
-                        label: Text(category.categoryName),
-                        visualDensity: VisualDensity.compact,
+                      (category) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.surfaceColor,
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: theme.secondaryColor.withValues(alpha: 0.12),
+                          ),
+                        ),
+                        child: Text(
+                          category.categoryName,
+                          style: TextStyle(
+                            color: theme.secondaryColor.withValues(alpha: 0.75),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     )
                     .toList(),
